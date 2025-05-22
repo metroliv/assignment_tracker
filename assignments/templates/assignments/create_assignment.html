@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'assignment_list' %}">Assignments</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Create Assignment</li>
+        </ol>
+    </nav>
+
+    <h2 class="mb-3">Create Assignment</h2>
+
+    {% if messages %}
+        <div>
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <form method="post" novalidate>
+        {% csrf_token %}
+        
+        <div class="mb-3">
+            <label for="title" class="form-label">Title:</label>
+            <input type="text" id="title" name="title" class="form-control" required>
+            <div class="invalid-feedback">
+                Please provide a title.
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label for="course" class="form-label">Course:</label>
+            <select id="course" name="course" class="form-select" required>
+                <option value="" disabled selected>Select a course</option>
+                {% for course in courses %}
+                    <option value="{{ course.id }}">{{ course.name }}</option>
+                {% endfor %}
+            </select>
+            <div class="invalid-feedback">
+                Please select a course.
+            </div>
+        </div>
+
+        <label class="form-label">Questions:</label>
+        <div id="question-area" class="mb-3">
+            <input type="text" name="questions[]" class="form-control mb-2" required>
+            <div class="invalid-feedback">
+                Question cannot be empty.
+            </div>
+        </div>
+        <button type="button" class="btn btn-secondary btn-sm mb-3" onclick="addQuestion()">Add Another Question</button>
+
+        <div class="d-flex justify-content-between">
+            <a href="{% url 'assignment_list' %}" class="btn btn-outline-primary">View Assignments</a>
+            <button type="submit" class="btn btn-primary">Create Assignment</button>
+        </div>
+    </form>
+</div>
+
+<script>
+// Simple client-side validation bootstrap style
+(() => {
+    'use strict'
+
+    const form = document.querySelector('form')
+
+    form.addEventListener('submit', event => {
+        if (!form.checkValidity()) {
+            event.preventDefault()
+            event.stopPropagation()
+        }
+        form.classList.add('was-validated')
+    }, false)
+})()
+
+function addQuestion() {
+    const div = document.getElementById("question-area")
+    const input = document.createElement('input')
+    input.type = 'text'
+    input.name = 'questions[]'
+    input.className = 'form-control mb-2'
+    input.required = true
+
+    // Add invalid feedback div for the new input
+    const feedback = document.createElement('div')
+    feedback.className = 'invalid-feedback'
+    feedback.innerText = 'Question cannot be empty.'
+
+    div.appendChild(input)
+    div.appendChild(feedback)
+}
+</script>
+{% endblock %}

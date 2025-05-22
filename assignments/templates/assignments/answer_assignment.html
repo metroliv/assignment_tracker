@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4">Answer Assignment: {{ assignment.title }}</h2>
+    <form method="post">
+        {% csrf_token %}
+        {% for question in assignment.questions.all %}
+            <div class="mb-4">
+                <label for="answer_{{ question.id }}" class="form-label"><strong>Q{{ forloop.counter }}:</strong> {{ question.text }}</label>
+                <textarea 
+                    id="answer_{{ question.id }}" 
+                    name="answer_{{ question.id }}" 
+                    rows="4" 
+                    class="form-control" 
+                    required></textarea>
+            </div>
+        {% endfor %}
+        <button type="submit" class="btn btn-primary">Submit Answers</button>
+        <a href="{% url 'assignment_list' %}" class="btn btn-secondary ms-2">Back to Assignments</a>
+    </form>
+</div>
+{% endblock %}
